@@ -7,13 +7,13 @@ namespace sportnet.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Initial : IMigrationMetadata
+    public sealed partial class AddTeamModel : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Initial));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddTeamModel));
         
         string IMigrationMetadata.Id
         {
-            get { return "201602081943276_Initial"; }
+            get { return "201602082326532_AddTeamModel"; }
         }
         
         string IMigrationMetadata.Source

@@ -3,18 +3,19 @@ namespace sportnet.Migrations
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
     using Models;
+    using System;
+    using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<sportnet.Models.SportNetContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "sportnet.Models.ApplicationDbContext";
         }
 
-        protected override void Seed(ApplicationDbContext context)
+        protected override void Seed(sportnet.Models.SportNetContext context)
         {
             //  This method will be called after migrating to the latest version.
 
@@ -28,7 +29,8 @@ namespace sportnet.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
-            
+
+            // ROLES
             if (!context.Roles.Any(r => r.Name == "SuperAdmin"))
             {
                 var roleStore = new RoleStore<IdentityRole>(context);
@@ -50,12 +52,12 @@ namespace sportnet.Migrations
                 var role = new IdentityRole { Name = "Coach" };
                 roleManager.Create(role);
             }
-
+            // USERS
             if (!(context.Users.Any(u => u.UserName == "superadmin@sportnet.com")))
             {
                 var userStore = new UserStore<ApplicationUser>(context);
                 var userManager = new UserManager<ApplicationUser>(userStore);
-                var userToInsert = new ApplicationUser { UserName = "superadmin@sportnet.com", Email = "superadmin@sportnet.com", LockoutEnabled = false };
+                var userToInsert = new ApplicationUser { UserName = "superadmin@sportnet.com", Email = "superadmin@sportnet.com", LockoutEnabled = false, FirstName = "Super", LastName = "Admin" };
                 userManager.Create(userToInsert, "Glenn123");
                 userManager.AddToRole(userToInsert.Id, "SuperAdmin");
             }
@@ -63,7 +65,7 @@ namespace sportnet.Migrations
             {
                 var userStore = new UserStore<ApplicationUser>(context);
                 var userManager = new UserManager<ApplicationUser>(userStore);
-                var userToInsert = new ApplicationUser { UserName = "clubadmin@sportnet.com", Email= "clubadmin@sportnet.com", LockoutEnabled = true };
+                var userToInsert = new ApplicationUser { UserName = "clubadmin@sportnet.com", Email = "clubadmin@sportnet.com", LockoutEnabled = true, FirstName = "Club", LastName = "Admin" };
                 userManager.Create(userToInsert, "Glenn123");
                 userManager.AddToRole(userToInsert.Id, "ClubAdmin");
             }
@@ -71,10 +73,22 @@ namespace sportnet.Migrations
             {
                 var userStore = new UserStore<ApplicationUser>(context);
                 var userManager = new UserManager<ApplicationUser>(userStore);
-                var userToInsert = new ApplicationUser { UserName = "coach@sportnet.com", Email = "coach@sportnet.com", LockoutEnabled = true };
+                var userToInsert = new ApplicationUser { UserName = "coach@sportnet.com", Email = "coach@sportnet.com", LockoutEnabled = true, FirstName = "Coach", LastName = "Glenn" };
                 userManager.Create(userToInsert, "Glenn123");
                 userManager.AddToRole(userToInsert.Id, "Coach");
             }
+            // TEAMS
+            var team = new Team
+            {
+                Name = "Miniemen B"
+            };
+            var team2 = new Team
+            {
+                Name = "Kadetten A"
+            };
+            context.Teams.AddOrUpdate(t => t.Name, team);
+            context.Teams.AddOrUpdate(t => t.Name, team2);
+            context.SaveChanges();
         }
     }
 }

@@ -2,12 +2,11 @@ namespace sportnet.Migrations
 {
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
-    using System;
-    using System.Data.Entity;
+    using Models;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<sportnet.Models.ApplicationDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<ApplicationDbContext>
     {
         public Configuration()
         {
@@ -15,7 +14,7 @@ namespace sportnet.Migrations
             ContextKey = "sportnet.Models.ApplicationDbContext";
         }
 
-        protected override void Seed(sportnet.Models.ApplicationDbContext context)
+        protected override void Seed(ApplicationDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
@@ -29,23 +28,52 @@ namespace sportnet.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
-
+            
             if (!context.Roles.Any(r => r.Name == "SuperAdmin"))
             {
-                var store = new RoleStore<IdentityRole>(context);
-                var manager = new RoleManager<IdentityRole>(store);
+                var roleStore = new RoleStore<IdentityRole>(context);
+                var roleManager = new RoleManager<IdentityRole>(roleStore);
                 var role = new IdentityRole { Name = "SuperAdmin" };
-
-                manager.Create(role);
+                roleManager.Create(role);
             }
-            if (!context.Users.Any(u => u.UserName == "glennobyn@admin.com"))
+            if (!context.Roles.Any(r => r.Name == "ClubAdmin"))
             {
-                var store = new UserStore<Models.ApplicationUser>(context);
-                var manager = new UserManager<Models.ApplicationUser>(store);
-                var user = new Models.ApplicationUser { UserName = "glennobyn@admin.com" };
+                var roleStore = new RoleStore<IdentityRole>(context);
+                var roleManager = new RoleManager<IdentityRole>(roleStore);
+                var role = new IdentityRole { Name = "ClubAdmin" };
+                roleManager.Create(role);
+            }
+            if (!context.Roles.Any(r => r.Name == "Coach"))
+            {
+                var roleStore = new RoleStore<IdentityRole>(context);
+                var roleManager = new RoleManager<IdentityRole>(roleStore);
+                var role = new IdentityRole { Name = "Coach" };
+                roleManager.Create(role);
+            }
 
-                manager.Create(user, "SuperAdmin");
-                manager.AddToRole(user.Id, "SuperAdmin");
+            if (!(context.Users.Any(u => u.UserName == "superadmin@sportnet.com")))
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var userToInsert = new ApplicationUser { UserName = "superadmin@sportnet.com", Email = "superadmin@sportnet.com", LockoutEnabled = false };
+                userManager.Create(userToInsert, "Glenn123");
+                userManager.AddToRole(userToInsert.Id, "SuperAdmin");
+            }
+            if (!(context.Users.Any(u => u.UserName == "clubadmin@sportnet.com")))
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var userToInsert = new ApplicationUser { UserName = "clubadmin@sportnet.com", Email= "clubadmin@sportnet.com", LockoutEnabled = true };
+                userManager.Create(userToInsert, "Glenn123");
+                userManager.AddToRole(userToInsert.Id, "ClubAdmin");
+            }
+            if (!(context.Users.Any(u => u.UserName == "coach@sportnet.com")))
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var userToInsert = new ApplicationUser { UserName = "coach@sportnet.com", Email = "coach@sportnet.com", LockoutEnabled = true };
+                userManager.Create(userToInsert, "Glenn123");
+                userManager.AddToRole(userToInsert.Id, "Coach");
             }
         }
     }
